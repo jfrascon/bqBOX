@@ -8,5 +8,7 @@
     <string name="mensaje_principal">Accede a tu cuenta de dropbox para ver tus libros</string>
     <string name="mensaje_aviso">Si no tienes la aplicación Dropbox instalada, se abrirá el navegador para acceder a tu cuenta</string>
     <string name="acceso_dropbox">Ver mis libros</string>
+    <string name="title_activity_ebooks">EbooksActivity</string>
 
+    <string name="lista_ebooks">Lista de bqbooks</string>
 </resources>
