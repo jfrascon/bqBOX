@@ -26,28 +26,25 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/nombre_fichero"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
         android:clickable="false"
         android:text="@string/selecciona_criterio_ordenacion"
-        android:textAppearance="?android:attr/textAppearance" 
-        android:layout_marginTop="15dp"/>
-    
-    
+        android:textAppearance="?android:attr/textAppearance" />
+
     <Spinner
         android:id="@+id/desplegable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/seleccion"
-        android:layout_centerHorizontal="true"
-         />
+        android:layout_centerHorizontal="true" />
 
     <ListView
         android:id="@+id/lista_ebooks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/desplegable"
-        android:layout_centerHorizontal="true" 
-        android:layout_marginTop="15dp"
-        >
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp" >
     </ListView>
 
-    </RelativeLayout>
+</RelativeLayout>

@@ -4,17 +4,16 @@
     <string name="app_name">bqBOX</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    
     <string name="mensaje_principal">Accede a tu cuenta de dropbox para ver tus libros</string>
     <string name="mensaje_aviso">Si no tienes la aplicación Dropbox instalada, se abrirá el navegador para acceder a tu cuenta</string>
     <string name="acceso_dropbox">Ver mis libros</string>
     <string name="title_activity_ebooks">EbooksActivity</string>
-
     <string name="lista_ebooks">Lista de bqbooks</string>
     <string name="selecciona_criterio_ordenacion">Selecciona criterio ordenación</string>
-    
+
     <string-array name="criterio_ordenacion">
         <item>Nombre fichero</item>
         <item>Fecha</item>
     </string-array>
+
 </resources>

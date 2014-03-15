@@ -1,31 +1,19 @@
 package com.jfrascon.bqbox;
 
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.session.AppKeyPair;
-import com.dropbox.client2.session.Session.AccessType;
-
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
-import android.os.Build;
+
+import com.jfrascon.bqbox.utils.DBApiSingleton;
 
 public class MainActivity extends Activity {
 
-	
 	final static private String ACCOUNT_PREFS_NAME = "prefs";
 	final static private String ACCESS_TOKEN_NAME = "ACCESS_TOKEN";
 
@@ -35,7 +23,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		acceso_dropbox = (Button) findViewById(R.id.acceso_dropbox);
 		acceso_dropbox.setOnClickListener(new OnClickListener() {
 
@@ -45,7 +33,6 @@ public class MainActivity extends Activity {
 						.startOAuth2Authentication(MainActivity.this);
 			}
 		});
-
 
 	}
 
@@ -59,17 +46,19 @@ public class MainActivity extends Activity {
 				// session
 				DBApiSingleton.getDBApi().getSession().finishAuthentication();
 
-				String accessToken = DBApiSingleton.getDBApi().getSession().getOAuth2AccessToken();
+				String accessToken = DBApiSingleton.getDBApi().getSession()
+						.getOAuth2AccessToken();
 
 				if (accessToken != null) {
-					SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
+					SharedPreferences prefs = getSharedPreferences(
+							ACCOUNT_PREFS_NAME, 0);
 					Editor edit = prefs.edit();
 					edit.putString(ACCESS_TOKEN_NAME, accessToken).commit();
-					
+
 					Intent intent = new Intent(this, EbooksActivity.class);
 					startActivity(intent);
 					finish();
-					
+
 				}
 
 			} catch (IllegalStateException e) {

@@ -1,4 +1,4 @@
-package com.jfrascon.bqbox;
+package com.jfrascon.bqbox.utils;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
