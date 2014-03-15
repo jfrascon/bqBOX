@@ -1,6 +1,9 @@
 package com.jfrascon.bqbox;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.exception.DropboxException;
@@ -13,6 +16,9 @@ import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -27,13 +33,12 @@ import android.os.Build;
 
 public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 
-	
 	Spinner desplegable;
-	
+
 	ArrayList<Entry> ebooks;
 
 	ListView lista_ebooks;
-	ListaAdapter adapter;
+	ListaAdapter lista_adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +47,55 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 
 		ebooks = new ArrayList<Entry>();
 		lista_ebooks = (ListView) findViewById(R.id.lista_ebooks);
-		adapter = new ListaAdapter(this, R.layout.layout_fila, ebooks);
-		lista_ebooks.setAdapter(adapter);
-		
+		lista_adapter = new ListaAdapter(this, R.layout.layout_fila, ebooks);
+		lista_ebooks.setAdapter(lista_adapter);
+
 		desplegable = (Spinner) findViewById(R.id.desplegable);
+		ArrayAdapter<CharSequence> desplegable_adapter = ArrayAdapter
+				.createFromResource(this, R.array.criterio_ordenacion,
+						android.R.layout.simple_spinner_item);
+		desplegable_adapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		desplegable.setAdapter(desplegable_adapter);
+		desplegable.setEnabled(false);
+
+		desplegable.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				Log.i(this.getClass().getName(), "ITEMSELECTED"+position);
+				switch(position){
+				
+				case 0:
+				Collections.sort(ebooks, new Comparator<Entry>() {
+			        @Override
+			        public int compare(Entry e1, Entry e2) {
+			        	return e1.fileName().compareToIgnoreCase(e2.fileName());
+			        }
+			    });
+				break;
+				case 1:
+					Collections.sort(ebooks, new Comparator<Entry>() {
+				        @Override
+				        public int compare(Entry e1, Entry e2) {
+				        	return new Date(e1.modified).compareTo(new Date(e2.modified));
+				        }
+				    });
+					
+				break;
+				
+				}
+				lista_adapter.notifyDataSetChanged();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 
 		// Prepare the loader. Either re-connect with an existing one,
 		// or start a new one.
@@ -70,18 +120,23 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 
 			ebooks.clear();
 
-			for (Entry ent : arg1.contents) {
-				ebooks.add(ent);
-				Log.i(this.getClass().getName(), ">>" + ent.fileName() + ".\n"
-						+ ent.icon + ".\n" + ent.isDir + ".\n" + ent.path
-						+ ".\n" + ent.modified);
+			if (arg1.contents.size() > 0) {
+
+				for (Entry ent : arg1.contents) {
+					ebooks.add(ent);
+					Log.i(this.getClass().getName(), ">>" + ent.fileName()
+							+ ".\n" + ent.icon + ".\n" + ent.isDir + ".\n"
+							+ ent.path + ".\n" + ent.modified);
+				}
+				desplegable.setEnabled(true);
+				
 			}
 		} else {
 			Toast.makeText(this, "No hay ebooks en tu dropbox",
 					Toast.LENGTH_LONG).show();
 		}
 
-		adapter.notifyDataSetChanged();
+		lista_adapter.notifyDataSetChanged();
 
 	}
 

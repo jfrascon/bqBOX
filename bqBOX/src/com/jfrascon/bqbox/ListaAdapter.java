@@ -39,6 +39,11 @@ public class ListaAdapter extends ArrayAdapter<Entry> {
 		holder.nombre_fichero = (TextView) convertView.findViewById(R.id.nombre_fichero);
 		holder.fecha_modificacion = (TextView) convertView.findViewById(R.id.fecha_modificacion);
 		
+		if(e.isDir)
+			holder.imagen_generica.setImageResource(R.drawable.ic_action_collection);
+		else
+			holder.imagen_generica.setImageResource(R.drawable.ic_action_view_as_list);
+		
 		holder.nombre_fichero.setText(e.fileName());
 		holder.fecha_modificacion.setText(e.modified);
 		

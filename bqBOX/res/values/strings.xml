@@ -12,4 +12,9 @@
 
     <string name="lista_ebooks">Lista de bqbooks</string>
     <string name="selecciona_criterio_ordenacion">Selecciona criterio ordenación</string>
+    
+    <string-array name="criterio_ordenacion">
+        <item>Nombre fichero</item>
+        <item>Fecha</item>
+    </string-array>
 </resources>
