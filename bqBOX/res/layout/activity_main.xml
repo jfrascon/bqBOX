@@ -11,7 +11,7 @@
     tools:context="com.jfrascon.bqbox.MainActivity" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/nombre_fichero"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -30,10 +30,10 @@
         android:text="@string/acceso_dropbox" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/fecha_modificacion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
+        android:layout_below="@+id/nombre_fichero"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="17dp"
         android:text="@string/mensaje_aviso" />
