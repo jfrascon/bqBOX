@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.util.Log;
 
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.exception.DropboxException;
@@ -14,22 +13,23 @@ import com.jfrascon.bqbox.utils.DBApiSingleton;
 
 public class DBDownloadEbookRequest extends AsyncTaskLoader<Entry> {
 
-	String name_file;
+	String nombre_fichero_remoto = null;
 
-	public DBDownloadEbookRequest(Context context, String name_file) {
+	public DBDownloadEbookRequest(Context context, String nombre_fichero_remoto) {
 		super(context);
-		this.name_file = name_file;
+		this.nombre_fichero_remoto = nombre_fichero_remoto;
 	}
 
 	@Override
 	public Entry loadInBackground() {
 		try {
-			
-			File file = new File("/sdcard", name_file);
+
+			String nombre_fichero_local = nombre_fichero_remoto.substring(nombre_fichero_remoto.lastIndexOf("/")+1);
+			File file = new File("/sdcard", nombre_fichero_local);
 			FileOutputStream outputStream = new FileOutputStream(file);
 
 			return DBApiSingleton.getDBApi()
-					.getFile(name_file, null, outputStream, null).getMetadata();
+					.getFile(nombre_fichero_remoto, null, outputStream, null).getMetadata();
 
 		} catch (DropboxException e) {
 			e.printStackTrace();

@@ -41,15 +41,28 @@ public class ListaAdapter extends ArrayAdapter<Entry> {
 		holder.fecha_modificacion = (TextView) convertView
 				.findViewById(R.id.fecha_modificacion);
 
-		if (e.isDir)
-			holder.imagen_generica
-					.setImageResource(R.drawable.ic_action_collection);
-		else
-			holder.imagen_generica
-					.setImageResource(R.drawable.ic_action_view_as_list);
+		int resId = 0;
+		CharSequence nombre_fich = e.fileName();
+		CharSequence fecha = e.modified;
 
-		holder.nombre_fichero.setText(e.fileName());
-		holder.fecha_modificacion.setText(e.modified);
+		if (e.isDir) {
+			resId = R.drawable.ic_action_collection;
+			if (e.icon.equalsIgnoreCase("subir_a")) {
+				resId = R.drawable.ic_action_collapse;
+				nombre_fich = "Subir a " + nombre_fich;
+				if (nombre_fich.equals("Subir a ")) {
+					nombre_fich = "Subir a bqBOX";  
+				}
+				fecha = "";
+			}
+		}
+		// holder.imagen_generica.setImageResource(R.drawable.ic_action_collection);
+		else {
+			resId = R.drawable.ic_action_view_as_list;
+		}
+		holder.imagen_generica.setImageResource(resId);
+		holder.nombre_fichero.setText(nombre_fich);
+		holder.fecha_modificacion.setText(fecha);
 
 		return convertView;
 	}

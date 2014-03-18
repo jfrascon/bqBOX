@@ -21,6 +21,8 @@
         android:layout_marginLeft="20dp"
         android:layout_toRightOf="@+id/imagen_generica"
         android:text="TextView"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:textSize="16sp" />
 
     <TextView
