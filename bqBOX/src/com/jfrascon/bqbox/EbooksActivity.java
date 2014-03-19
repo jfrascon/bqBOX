@@ -1,15 +1,22 @@
 package com.jfrascon.bqbox;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.epub.EpubReader;
+
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.Loader;
+import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -66,7 +73,7 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 
 				if (!ebooks.get(position).isDir) {
 
-					ebook_seleccionado = ebooks.get(position).path;// ebooks.get(position).fileName();
+					ebook_seleccionado = ebooks.get(position).path;
 					getLoaderManager().restartLoader(PETICION_DESCARGA, null,
 							callback).forceLoad();
 					Toast.makeText((Context) callback,
@@ -109,6 +116,13 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
 
+				Entry aux = null;
+				if (ebooks.size() > 0) {
+					aux = ebooks.get(0);
+					if (rutas_anteriores.size() > 0)
+						ebooks.remove(0);
+				}
+
 				switch (position) {
 
 				case 0: // Comparación para ordenar por nombre de fichero.
@@ -132,6 +146,10 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 					break;
 				}
 
+				if (ebooks.size() > 0) {
+					if (rutas_anteriores.size() > 0)
+						ebooks.add(0, aux);
+				}
 				lista_adapter.notifyDataSetChanged();
 			}
 
@@ -172,32 +190,66 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 	public void onLoadFinished(Loader<Entry> arg0, Entry arg1) {
 
 		if (arg1 != null) {
-			// Los ficheros son hojas en el sistema de ficheros, no cuelga nada de ellos.
+			// Los ficheros son hojas en el sistema de ficheros, no cuelga nada
+			// de ellos.
 			// Dejar el ListView tal y como está.
-			if (!arg1.isDir) 
+			if (!arg1.isDir) {
+
+				Log.i(this.getClass().getName(),
+						Environment.getExternalStorageDirectory() + "/"
+								+ arg1.fileName());
+
+				AssetManager assetManager = getAssets();
+
+				try {
+					// find InputStream for book
+					InputStream epubInputStream = assetManager.open(Environment
+							.getExternalStorageDirectory()
+							+ "/"
+							+ arg1.fileName());
+
+					// Load Book from inputStream
+					Book book = (new EpubReader()).readEpub(epubInputStream);
+					Toast.makeText(this, book.getTitle(), Toast.LENGTH_LONG)
+							.show();
+					Log.i(this.getClass().getName(),
+							"title: " + book.getTitle());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
 				return;
+			}
+
 			// En caso de seleccionar un directorio, actualizar el ListView.
 			ebooks.clear();
-			
-			if (!rutas_anteriores.isEmpty()) {
 
+			if (!rutas_anteriores.isEmpty()) {
+				// Añadir una entrada para subir al directorio superior.
 				Entry subir_a = new Entry();
 				subir_a.isDir = true;
 				subir_a.path = rutas_anteriores
 						.get(rutas_anteriores.size() - 1);
 				subir_a.icon = "subir_a";
-				// rutas_anteriores.remove(rutas_anteriores.size() - 1);
 				ebooks.add(subir_a);
 			}
 
+			// Analizar los archivos (directorios o ficheros) que cuelgan del
+			// directorio seleccionado.
 			if (arg1.contents.size() > 0) {
-				
+
 				for (Entry ent : arg1.contents) {
 
-					ebooks.add(ent);
-					Log.i(this.getClass().getName(), ">> " + ent.path + " ("
-							+ ent.icon + ", " + ent.isDir + ", " + ent.modified
-							+ ")");
+					// Los ficheros pdf son interpretados por Dropbox como
+					// libros electrónicos.
+					// Se filtran los archivos pdf.
+					if (!ent.fileName().endsWith("pdf")
+							&& !ent.fileName().endsWith("PDF")) {
+						ebooks.add(ent);
+						Log.i(this.getClass().getName(), ">> " + ent.path
+								+ " (" + ent.icon + ", " + ent.isDir + ", "
+								+ ent.modified + ")");
+					}
 				}
 
 				desplegable.setEnabled(true);
