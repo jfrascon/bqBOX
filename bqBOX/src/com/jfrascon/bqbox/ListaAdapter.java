@@ -56,7 +56,6 @@ public class ListaAdapter extends ArrayAdapter<Entry> {
 				fecha = "";
 			}
 		}
-		// holder.imagen_generica.setImageResource(R.drawable.ic_action_collection);
 		else {
 			resId = R.drawable.ic_action_view_as_list;
 		}

@@ -1,23 +1,17 @@
 package com.jfrascon.bqbox;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.epub.EpubReader;
-
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -69,8 +63,6 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
-				// Log.i(this.getClass().getName(), ebooks.get(position).path);
-
 				// Averiguar si se ha pulsado un directorio o un fichero.
 				if (!ebooks.get(position).isDir) {
 
@@ -78,7 +70,7 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 					getLoaderManager().restartLoader(PETICION_DESCARGA, null,
 							callback).forceLoad();
 					Toast.makeText((Context) callback,
-							"Descarga de ebook a la sdcard", Toast.LENGTH_LONG)
+							"Descargando ebook a la sdcard", Toast.LENGTH_LONG)
 							.show();
 				} else {
 					// Averiguar si se ha pulsado la entrada 'subir_a'.
@@ -88,7 +80,7 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 											.get(rutas_anteriores.size() - 1))) {
 
 						rutas_anteriores.remove(rutas_anteriores.size() - 1);
-					} 
+					}
 					// Se ha pulsado una entrada que no es 'subir_a'.
 					else {
 
@@ -96,8 +88,9 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 					}
 
 					ruta_actual = ebooks.get(position).path;
-					// Log.i(this.getClass().getName(), rutas_anteriores.toString());
-					// Log.i(this.getClass().getName(), ruta_actual); 
+					// Log.i(this.getClass().getName(),
+					// rutas_anteriores.toString());
+					// Log.i(this.getClass().getName(), ruta_actual);
 					getLoaderManager().restartLoader(PETICION_LISTA_EBOOKS,
 							null, callback).forceLoad();
 				}
@@ -204,35 +197,26 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 	public void onLoadFinished(Loader<Entry> arg0, Entry arg1) {
 
 		if (arg1 != null) {
+
 			// Los ficheros son hojas en el sistema de ficheros, no cuelga nada
 			// de ellos.
 			// Dejar el ListView tal y como está.
 			if (!arg1.isDir) {
 
-				Log.i(this.getClass().getName(),
-						Environment.getExternalStorageDirectory() + "/"
-								+ arg1.fileName());
+				Toast.makeText(this, "Descarga completada", Toast.LENGTH_LONG)
+						.show();
 
-				AssetManager assetManager = getAssets();
+				// Log.i(this.getClass().getName(),
+				// Environment.getExternalStorageDirectory().getPath() + "/" +
+				// arg1.fileName());
 
-				try {
-					// find InputStream for book
-					InputStream epubInputStream = assetManager.open(Environment
-							.getExternalStorageDirectory()
-							+ "/"
-							+ arg1.fileName());
-
-					// Load Book from inputStream
-					Book book = (new EpubReader()).readEpub(epubInputStream);
-					Toast.makeText(this, book.getTitle(), Toast.LENGTH_LONG)
-							.show();
-					Log.i(this.getClass().getName(),
-							"title: " + book.getTitle());
-				} catch (IOException e) {
-					e.printStackTrace();
-					
-				}
-
+				Intent intent = new Intent(this, PortadaActivity.class);
+				Bundle b = new Bundle();
+				b.putString("ruta_libro",
+						Environment.getExternalStorageDirectory().getPath()
+								+ "/" + arg1.fileName());
+				intent.putExtras(b);
+				startActivity(intent);
 				return;
 			}
 
@@ -267,7 +251,9 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 					if (!ent.fileName().endsWith("pdf")
 							&& !ent.fileName().endsWith("PDF")) {
 						ebooks.add(ent);
-						// Log.i(this.getClass().getName(), ">> " + ent.path + " (" + ent.icon + ", " + ent.isDir + ", " + ent.modified + ")");
+						// Log.i(this.getClass().getName(), ">> " + ent.path +
+						// " (" + ent.icon + ", " + ent.isDir + ", " +
+						// ent.modified + ")");
 						habilitar_desplegable = true;
 					}
 				}

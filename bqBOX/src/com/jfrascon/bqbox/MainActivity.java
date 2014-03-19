@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
 				}
 
 			} catch (IllegalStateException e) {
-				Log.e(this.getClass().getName(), "Error authenticating", e);
+				Log.e(this.getClass().getName(), "Error de autenticación", e);
 			}
 		}
 	}

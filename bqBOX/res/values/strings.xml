@@ -10,10 +10,13 @@
     <string name="title_activity_ebooks">EbooksActivity</string>
     <string name="lista_ebooks">Lista de bqbooks</string>
     <string name="selecciona_criterio_ordenacion">Selecciona criterio ordenación</string>
+    <string name="nombre_libro">Título del libro</string>
 
     <string-array name="criterio_ordenacion">
         <item>Nombre fichero</item>
         <item>Fecha</item>
     </string-array>
+
+    <string name="title_activity_portada">PortadaActivity</string>
 
 </resources>
