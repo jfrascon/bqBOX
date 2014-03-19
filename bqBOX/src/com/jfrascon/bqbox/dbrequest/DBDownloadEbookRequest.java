@@ -24,13 +24,17 @@ public class DBDownloadEbookRequest extends AsyncTaskLoader<Entry> {
 	@Override
 	public Entry loadInBackground() {
 		try {
-
-			String nombre_fichero_local = nombre_fichero_remoto.substring(nombre_fichero_remoto.lastIndexOf("/")+1);
-			File file = new File(Environment.getExternalStorageDirectory(), nombre_fichero_local);
+			// El nombre del fichero descargado coincide con el nombre del
+			// fichero almancenado en Dropbox.
+			String nombre_fichero_local = nombre_fichero_remoto
+					.substring(nombre_fichero_remoto.lastIndexOf("/") + 1);
+			File file = new File(Environment.getExternalStorageDirectory(),
+					nombre_fichero_local);
 			FileOutputStream outputStream = new FileOutputStream(file);
 
 			return DBApiSingleton.getDBApi()
-					.getFile(nombre_fichero_remoto, null, outputStream, null).getMetadata();
+					.getFile(nombre_fichero_remoto, null, outputStream, null)
+					.getMetadata();
 
 		} catch (DropboxException e) {
 			e.printStackTrace();

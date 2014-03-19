@@ -69,8 +69,9 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
-				Log.i(this.getClass().getName(), ebooks.get(position).path);
+				// Log.i(this.getClass().getName(), ebooks.get(position).path);
 
+				// Averiguar si se ha pulsado un directorio o un fichero.
 				if (!ebooks.get(position).isDir) {
 
 					ebook_seleccionado = ebooks.get(position).path;
@@ -80,22 +81,23 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 							"Descarga de ebook a la sdcard", Toast.LENGTH_LONG)
 							.show();
 				} else {
-
+					// Averiguar si se ha pulsado la entrada 'subir_a'.
 					if (!rutas_anteriores.isEmpty()
 							&& ebooks.get(position).path
 									.equalsIgnoreCase(rutas_anteriores
 											.get(rutas_anteriores.size() - 1))) {
 
 						rutas_anteriores.remove(rutas_anteriores.size() - 1);
-					} else {
+					} 
+					// Se ha pulsado una entrada que no es 'subir_a'.
+					else {
 
 						rutas_anteriores.add(ruta_actual);
 					}
 
 					ruta_actual = ebooks.get(position).path;
-					Log.i(this.getClass().getName(),
-							rutas_anteriores.toString());
-					Log.i(this.getClass().getName(), ruta_actual);
+					// Log.i(this.getClass().getName(), rutas_anteriores.toString());
+					// Log.i(this.getClass().getName(), ruta_actual); 
 					getLoaderManager().restartLoader(PETICION_LISTA_EBOOKS,
 							null, callback).forceLoad();
 				}
@@ -116,11 +118,23 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
 
-				Entry aux = null;
-				if (ebooks.size() > 0) {
-					aux = ebooks.get(0);
-					if (rutas_anteriores.size() > 0)
+				Entry subir_a = null;
+				if (rutas_anteriores.size() != 0) {
+					// No se puede ordenar cuando hay
+					// 1. La entrada subir_a únicamente.
+					// o bien
+					// 2. La entrada subir_a y un archivo (directorio o
+					// fichero).
+					if (ebooks.size() > 2) {
+						// La entrada 'subir_a', si la hay, no se ordena,
+						// siempre es la primera.
+						// Se ordena desde la entrada con indice 1 hasta el
+						// final.
+						subir_a = ebooks.get(0);
 						ebooks.remove(0);
+					} else {
+						return;
+					}
 				}
 
 				switch (position) {
@@ -146,10 +160,10 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 					break;
 				}
 
-				if (ebooks.size() > 0) {
-					if (rutas_anteriores.size() > 0)
-						ebooks.add(0, aux);
+				if (rutas_anteriores.size() != 0) {
+					ebooks.add(0, subir_a);
 				}
+
 				lista_adapter.notifyDataSetChanged();
 			}
 
@@ -216,6 +230,7 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 							"title: " + book.getTitle());
 				} catch (IOException e) {
 					e.printStackTrace();
+					
 				}
 
 				return;
@@ -224,8 +239,10 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 			// En caso de seleccionar un directorio, actualizar el ListView.
 			ebooks.clear();
 
+			// En caso de que se hubiese descendido por el árbol
+			// de directorios se añade una entrada para subir al directorio
+			// superior.
 			if (!rutas_anteriores.isEmpty()) {
-				// Añadir una entrada para subir al directorio superior.
 				Entry subir_a = new Entry();
 				subir_a.isDir = true;
 				subir_a.path = rutas_anteriores
@@ -234,6 +251,7 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 				ebooks.add(subir_a);
 			}
 
+			boolean habilitar_desplegable = false;
 			// Analizar los archivos (directorios o ficheros) que cuelgan del
 			// directorio seleccionado.
 			if (arg1.contents.size() > 0) {
@@ -242,18 +260,21 @@ public class EbooksActivity extends Activity implements LoaderCallbacks<Entry> {
 
 					// Los ficheros pdf son interpretados por Dropbox como
 					// libros electrónicos.
+					// Así pues Dropbox nos proporciona directorio, ficheros
+					// epub y fichero pdf (debido al tipo de app que hemos
+					// registrado en Dropbox que se va a desarrollar)
 					// Se filtran los archivos pdf.
 					if (!ent.fileName().endsWith("pdf")
 							&& !ent.fileName().endsWith("PDF")) {
 						ebooks.add(ent);
-						Log.i(this.getClass().getName(), ">> " + ent.path
-								+ " (" + ent.icon + ", " + ent.isDir + ", "
-								+ ent.modified + ")");
+						// Log.i(this.getClass().getName(), ">> " + ent.path + " (" + ent.icon + ", " + ent.isDir + ", " + ent.modified + ")");
+						habilitar_desplegable = true;
 					}
 				}
-
-				desplegable.setEnabled(true);
 			}
+
+			desplegable.setEnabled(habilitar_desplegable);
+
 		} else {
 
 			Toast.makeText(this, "No hay ebooks en tu dropbox",
